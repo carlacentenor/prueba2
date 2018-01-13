@@ -1,36 +1,75 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/custom.css">
-    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase-database.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-   
-    <script src="js/nuevoproducto.js"></script>
-  
-
-    <title>Gestión de Productos con Firebase</title>
+  <meta charset="UTF-8">
+  <title>Prueba de autenticacion firebase para google (sdk de Javascript)</title>
+  <style>
+    #datosuser{
+      font-size: .8em;
+    }
+  </style>
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="index.html" title="Inicio">Inicio</a></li>
-                <li><a href="administracion.html" title="">Administracion</a></li>
-                <li><a href="nuevoproducto.html" title="">Añadir Productos</a></li>
-            </ul>
-        </div>
-    </nav>
-    <div class="container-fluid" id="listado">
-        <h1>Listado de Productos</h1>
-        <button class="btn-google">login</button>
-    </div>
+  <button id="botonlogin">Haz login con Google</button>  
+  <button id="botonlogout">Haz logout</button>  
+  <p id="datosuser"></p>
+<script src="https://www.gstatic.com/firebasejs/3.5.2/firebase.js"></script>
+<script>
+  // inicializar Firebase
+  var config = {
+    apiKey: "AIzaSyBrzy_DeH15B9jdEQBD40kFAo1Egw1tVNk",
+    authDomain: "veigapp-e9b22.firebaseapp.com",
+    databaseURL: "https://veigapp-e9b22.firebaseio.com",
+    projectId: "veigapp-e9b22",
+    storageBucket: "veigapp-e9b22.appspot.com",
+    messagingSenderId: "465534514371"
+  };
+  firebase.initializeApp(config);
+</script>
+
+
+<script>
+// accedo al servicio de autenticación
+var authService = firebase.auth();
+
+
+// manejador de eventos para loguearse
+document.getElementById('botonlogin').addEventListener('click', function() {
+  var provider = new firebase.auth.GoogleAuthProvider();
+  provider.addScope('email');
+  authService.signInWithPopup(provider)
+        .then(function(result) {
+            // logueado con éxito
+            console.log('Hemos autenticado al usuario ', result.user);
+        })
+        .catch(function(error) {
+            // Fallo de login
+            console.log('Se ha encontrado un error:', error);
+        });
+})
+
+
+//manejador de eventos para cerrar sesión (logout)
+document.getElementById('botonlogout').addEventListener('click', function() {
+  authService.signOut()
+})
+
+
+// manejador de eventos para los cambios del estado de autenticación
+authService.onAuthStateChanged(function(user) {
+  if (user) {
+    console.log('AuthStateChanged', user)
+    document.getElementById('datosuser').innerHTML = JSON.stringify(user);
+    document.getElementById('botonlogin').style.display = 'none';
+    document.getElementById('botonlogout').style.display = 'block';
+  } else {
+    document.getElementById('datosuser').innerHTML = 'Sin usuario logueado...'
+    document.getElementById('botonlogin').style.display = 'block';
+    document.getElementById('botonlogout').style.display = 'none';
+  }
+});
+</script>
+
+
 </body>
 </html>

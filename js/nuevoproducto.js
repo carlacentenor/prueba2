@@ -13,7 +13,7 @@ $(document).ready(function()
       };
       firebase.initializeApp(config);
 
-
+      var authService = firebase.auth();
 
       var provider = new firebase.auth.GoogleAuthProvider();
         $('.btn-google').click(function(){
